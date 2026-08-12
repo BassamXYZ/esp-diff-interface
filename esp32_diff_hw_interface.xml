@@ -1,0 +1,11 @@
+<library path="esp32_diff_hw_interface">
+  <class
+    name="esp32_diff_hw_interface/Esp32DiffHwInterface"
+    type="esp32_diff_hw_interface::Esp32DiffHwInterface"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Hardware interface for an ESP32 differential-drive robot connected
+      over WiFi via micro-ROS. Reads /joint_states and writes /joint_vel_cmd.
+    </description>
+  </class>
+</library>
