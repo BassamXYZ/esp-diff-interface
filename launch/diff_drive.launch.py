@@ -4,9 +4,14 @@ from launch_ros.actions import Node
 def generate_launch_description():
     return LaunchDescription([
         Node(
-            package='spirob_diff_drive',
-            executable='diff_drive_teleop',
-            name='diff_drive_teleop',
-            output='screen'
-        )
+            package='controller_manager',
+            executable='ros2_control_node',
+            parameters=['diff_drive_controller.yaml'],
+            output='screen',
+        ),
+        Node(
+            package='controller_manager',
+            executable='spawner',
+            arguments=['diff_drive_controller'],
+        ),
     ])

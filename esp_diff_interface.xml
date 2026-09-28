@@ -1,0 +1,9 @@
+<library path="esp_diff_interface">
+  <class name="esp_diff_interface/esp_diff"
+         type="esp_diff::ESPDiffDrive"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Hardware interface for ESP32 differential drive robot.
+    </description>
+  </class>
+</library>

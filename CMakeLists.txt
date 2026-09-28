@@ -1,30 +1,58 @@
 cmake_minimum_required(VERSION 3.8)
-project(spirob_diff_drive)
+project(esp_diff_interface)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+# find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
+find_package(controller_interface REQUIRED)
+find_package(hardware_interface REQUIRED)
+find_package(pluginlib REQUIRED)
 
-add_executable(diff_drive_teleop src/diff_drive_teleop.cpp)
-target_include_directories(diff_drive_teleop PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-target_compile_features(diff_drive_teleop PUBLIC c_std_99 cxx_std_17)
-ament_target_dependencies(diff_drive_teleop
-  rclcpp
-  geometry_msgs
-  std_msgs)
+include_directories(include)   # if you keep headers in include/ folder
 
-install(TARGETS diff_drive_teleop
-  DESTINATION lib/${PROJECT_NAME})
+# Build the shared library
+add_library(${PROJECT_NAME} SHARED
+  src/esp_diff_interface.cpp
+)
+
+# Specify dependencies
+target_include_directories(${PROJECT_NAME} PRIVATE
+  ${rclcpp_INCLUDE_DIRS}
+  ${controller_interface_INCLUDE_DIRS}
+  ${hardware_interface_INCLUDE_DIRS}
+  ${pluginlib_INCLUDE_DIRS}
+)
+
+target_link_libraries(${PROJECT_NAME}
+  ${rclcpp_LIBRARIES}
+  ${controller_interface_LIBRARIES}
+  ${hardware_interface_LIBRARIES}
+  ${pluginlib_LIBRARIES}
+)
+
+# Export the plugin description file
+pluginlib_export_plugin_description_file(hardware_interface esp_diff_interface.xml)
+
+# Install the library and the plugin description
+install(TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(FILES esp_diff_interface.xml
+  DESTINATION share/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
 
